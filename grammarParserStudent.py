@@ -19,22 +19,53 @@ class Lexer:
 
     def tokenize(self):
         #   Your task: Import your code from Project #1 and you will need to update the tokenize function to add the following new functionalities: 
+            #	Construct regular expressions to support float data types
+            #	Construct regular expressions to support multi character variable names
+            #	Add support for character data types
+            #	Add support for integer data types
         tokens = []
         while self.position < len(self.input):
             char = self.input[self.position]
             print("char: ", char, self.position)
+            if char.isspace():
+                self.position += 1
+                continue
             if char in [' ', '\n']:
                 self.position += 1
                 continue
-            if char.isalpha():
+            ## elif block to handle float data type
+            ## !!! This is your task - Please complete this elif block to handle float data type !!! 
+
+            # Regular expression to check for data types, should be done before processing the VARIABLE token
+            elif re.match(r'float|char|int', self.input[self.position:]):
+                match = re.match(r'float|char|int', self.input[self.position:])
+                value = match.group(0)
+                self.position += len(value)
+                tokens.append(Token('TYPE', value))
+            ## !!!! Complete the rest of the code !!!!
+            elif char.isalpha():
+                # var = ''
+                # while self.position < len(self.input) and (self.input[self.position].isalnum() or self.input[self.position] == '_'):
+                #     var += self.input[self.position]
+                #     self.position += 1
                 tokens.append(Token('VARIABLE', char))
             elif char.isdigit():
                 num = ''
-                while self.position < len(self.input) and self.input[self.position].isdigit():
+                token_is_float = False
+                while self.position < len(self.input) and (self.input[self.position].isdigit() or self.input[self.position] == '.'):
+                    if self.input[self.position] == '.':
+                        token_is_float = True
                     num += self.input[self.position]
                     self.position += 1
                 self.position -= 1
-                tokens.append(Token('INTEGER', int(num)))
+                if token_is_float:
+                    tokens.append(Token('FLOAT', float(num)))
+                else:
+                    tokens.append(Token('INTEGER', int(num)))
+            elif char == "'":
+                self.position += 1
+                tokens.append(Token('CHAR', self.input[self.position]))
+                self.position += 1
             elif char in "+-*/":
                 tokens.append(Token('OPERATOR', char))
             elif char in'()':
@@ -46,31 +77,8 @@ class Lexer:
             else:
                 raise ValueError(f"Invalid character: {char}")
             self.position += 1
-        # print(tokens)
+        print("Tokens:", tokens)
         return tokens
-            #	Construct regular expressions to support float data types
-            #	Construct regular expressions to support multi character variable names
-            #	Add support for character data types
-            #	Add support for integer data types
-        tokens = []
-        while self.position < len(self.input):
-            char = self.input[self.position]
-
-            if char.isspace():
-                self.position += 1
-                continue
-
-            ## elif block to handle float data type
-            ## !!! This is your task - Please complete this elif block to handle float data type !!! 
-
-            # Regular expression to check for data types, should be done before processing the VARIABLE token
-            elif re.match(r'float|char|int', self.input[self.position:]):
-                match = re.match(r'float|char|int', self.input[self.position:])
-                value = match.group(0)
-                self.position += len(value)
-                tokens.append(Token('TYPE', value))
-
-            ## !!!! Complete the rest of the code !!!!
 
 
 
